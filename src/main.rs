@@ -1,12 +1,12 @@
 use colors_transform::{Color, Hsl};
 use image::RgbImage;
-use num::{complex::ComplexFloat, Complex};
+use num::{Complex, complex::ComplexFloat};
 use rayon::prelude::*;
 use std::time::Instant;
 
 const MAX_RECURSIONS: u32 = 360 * 4;
-const WIDTH_PIXEL: u32 = 1500;
-const HEIGHT_PIXEL: u32 = 1000;
+const WIDTH_PIXEL: u32 = 3000;
+const HEIGHT_PIXEL: u32 = 2323;
 
 fn mandelbrot(x: f32, y: f32) -> u32 {
     let c = Complex::new(x, y);
@@ -30,12 +30,16 @@ fn main() {
         .flat_map(|y_image| {
             (0..WIDTH_PIXEL).into_par_iter().map(move |x_image| {
                 let x_math =
-                    (x_image as f32 - 2.0 / 3.0 * WIDTH_PIXEL as f32) * (3.0 / WIDTH_PIXEL as f32);
+                    (x_image as f32 - 2.0 / 3.0 * WIDTH_PIXEL as f32) * (3.1 / WIDTH_PIXEL as f32);
                 let y_math =
-                    (y_image as f32 - HEIGHT_PIXEL as f32 / 2.0) * (2.0 / HEIGHT_PIXEL as f32);
+                    (y_image as f32 - HEIGHT_PIXEL as f32 / 2.0) * (2.4 / HEIGHT_PIXEL as f32);
 
                 let recursions = mandelbrot(x_math, y_math);
-                let rgb = Hsl::from(recursions as f32 % 360.0, 100.0, 50.0);
+                let rgb = Hsl::from(
+                    (recursions as f32).powi(2) as f32 % 360.0,
+                    100.0,
+                    50.0 - (recursions as f32).log2() / (MAX_RECURSIONS as f32).log2() * 50.0,
+                );
 
                 [
                     rgb.get_red() as u8,
