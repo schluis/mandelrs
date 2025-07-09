@@ -7,6 +7,9 @@ use std::time::Instant;
 const MAX_RECURSIONS: u32 = 360 * 4;
 const WIDTH_PIXEL: u32 = 3000;
 const HEIGHT_PIXEL: u32 = 2323;
+const ZOOM: f32 = 300000.0;
+const ZOOM_X: f32 = 0.35989;
+const ZOOM_Y: f32 = 0.64;
 
 fn mandelbrot(x: f32, y: f32) -> u32 {
     let c = Complex::new(x, y);
@@ -29,10 +32,12 @@ fn main() {
         .into_par_iter()
         .flat_map(|y_image| {
             (0..WIDTH_PIXEL).into_par_iter().map(move |x_image| {
-                let x_math =
-                    (x_image as f32 - 2.0 / 3.0 * WIDTH_PIXEL as f32) * (3.1 / WIDTH_PIXEL as f32);
-                let y_math =
-                    (y_image as f32 - HEIGHT_PIXEL as f32 / 2.0) * (2.4 / HEIGHT_PIXEL as f32);
+                let x_math = (x_image as f32 - 2.0 / 3.0 * WIDTH_PIXEL as f32)
+                    * (3.1 / WIDTH_PIXEL as f32 / ZOOM)
+                    + ZOOM_X;
+                let y_math = (y_image as f32 - HEIGHT_PIXEL as f32 / 2.0)
+                    * (2.4 / HEIGHT_PIXEL as f32 / ZOOM)
+                    - ZOOM_Y;
 
                 let recursions = mandelbrot(x_math, y_math);
                 let rgb = Hsl::from(
